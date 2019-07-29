@@ -919,7 +919,10 @@ const viberPlaySdk = {
 
   payments: {
     /**
-     * (Experimental)
+     * (Experimental) Register a callback function when payments feature is
+     * ready.
+     * Please note that if the client is not payments supported, the callback
+     * will never be executed.
      * @memberof ViberPlay
      * @method payments.onReady
      * @returns
@@ -932,7 +935,7 @@ const viberPlaySdk = {
       conn.request('sgPaymentsOnReady').then(() => callback()),
 
     /**
-     * (Experimental)
+     * (Experimental) Get in-app purchase catalog of the current game.
      * @memberof ViberPlay
      * @method payments.getCatalogAsync
      * @returns Array of products with pricing information
@@ -945,11 +948,15 @@ const viberPlaySdk = {
       conn.request('sgPaymentsGetCatalog'),
 
     /**
-     * (Experimental)
+     * (Experimental) Initialize a purchase attempt on the specified in-app 
+     * purchase product.
+     * When purchase result is returned, game developers are adviced to verify
+     * the signature on a game server. If the purchase passed the verification,
+     * it should be consumed as soon as possible.
      * @memberof ViberPlay
      * @method payments.purchaseAsync
      * @param config - An object containing purchase configuration information
-     * @returns Purchase information
+     * @returns Purchase result
      * @example
      * ViberPlay.payments.purchaseAsync({
      *   productID: 'someProduct',
@@ -984,7 +991,12 @@ const viberPlaySdk = {
     },
 
     /**
-     * (Experimental)
+     * (Experimental) Get a list of unconsumed purchases.
+     * This is useful for games to double check if there's unconsumed purchase
+     * should be processed.
+     * Please note the list will only consists of the purchases made
+     * on the same payment platform of the current device.
+     * e.g. App Store purchases will not be visible on Google Play device.
      * @memberof ViberPlay
      * @method payments.getPurchasesAsync
      * @returns
@@ -998,7 +1010,8 @@ const viberPlaySdk = {
     },
 
     /**
-     * (Experimental)
+     * (Experimental) Consume the specified purchase. 
+     * Games must provision related game items when a purchase is consumed.
      * @memberof ViberPlay
      * @method payments.consumePurchaseAsync
      * @param purchaseToken - A string of purchase token used for consumption

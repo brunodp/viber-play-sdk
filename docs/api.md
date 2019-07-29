@@ -79,8 +79,8 @@
     -   [getExtraData][75]
     -   [getPlayer][76]
 -   [PurchaseConfig][77]
--   [Purchase][78]
--   [CustomUpdatePayload][79]
+-   [CustomUpdatePayload][78]
+-   [Purchase][79]
 -   [SignedPurchaseRequest][80]
 
 ## ViberPlay
@@ -641,7 +641,10 @@ Returns **any**
 
 ### payments.onReady
 
-(Experimental)
+(Experimental) Register a callback function when payments feature is
+ready.
+Please note that if the client is not payments supported, the callback
+will never be executed.
 
 **Examples**
 
@@ -655,7 +658,7 @@ Returns **any**
 
 ### payments.getCatalogAsync
 
-(Experimental)
+(Experimental) Get in-app purchase catalog of the current game.
 
 **Examples**
 
@@ -669,7 +672,11 @@ Returns **any** Array of products with pricing information
 
 ### payments.purchaseAsync
 
-(Experimental)
+(Experimental) Initialize a purchase attempt on the specified in-app 
+purchase product.
+When purchase result is returned, game developers are adviced to verify
+the signature on a game server. If the purchase passed the verification,
+it should be consumed as soon as possible.
 
 **Parameters**
 
@@ -686,11 +693,16 @@ ViberPlay.payments.purchaseAsync({
 })
 ```
 
-Returns **any** Purchase information
+Returns **any** Purchase result
 
 ### payments.getPurchasesAsync
 
-(Experimental)
+(Experimental) Get a list of unconsumed purchases.
+This is useful for games to double check if there's unconsumed purchase
+should be processed.
+Please note the list will only consists of the purchases made
+on the same payment platform of the current device.
+e.g. App Store purchases will not be visible on Google Play device.
 
 **Examples**
 
@@ -704,7 +716,8 @@ Returns **any**
 
 ### payments.consumePurchaseAsync
 
-(Experimental)
+(Experimental) Consume the specified purchase. 
+Games must provision related game items when a purchase is consumed.
 
 **Parameters**
 
@@ -761,12 +774,12 @@ On the game server, please validate this signature by the following steps:
 3.  Decode the second part with base64url encoding, which should be a
     string representation of an JSON object with fields below:
 
-    -   algorithm - always `HMAC-SHA256`
-    -   issued_at - a unix timestamp representing the time signature
-        is issued.
-    -   player_id - Auth ID of the player.
+    -   algorithm - Always `HMAC-SHA256`
+    -   issued_at - A UNIX timestamp representing the time signature
+        is issued
+    -   player_id - ID of the player
     -   request_payload - the requestPayload string you defined when
-        calling `ViberPlay.player.getSignedPlayerInfoAsync`.
+        calling `ViberPlay.player.getSignedPlayerInfoAsync`
 
 4.  Hash the second part string using HMAC SHA-256 and your app
     secret, check if it is identical to the first part string.
@@ -1207,15 +1220,6 @@ Type: [Object][88]
 -   `productID` **[string][87]** ID of the product
 -   `developerPayload` **[string][87]?** An optional payload can be assigned by game developer, which will be attached in the signed purchase request
 
-## Purchase
-
-Type: [Object][88]
-
-**Properties**
-
--   `productID` **[string][87]** ID of the product
--   `developerPayload` **[string][87]?** An optional payload can be assigned by game developer, which will be attached in the signed purchase request
-
 ## CustomUpdatePayload
 
 Type: [Object][88]
@@ -1249,7 +1253,43 @@ Type: [Object][88]
     notification is not always guaranteed, depending on user setting and
     platform policies.
 
+## Purchase
+
+Type: [Object][88]
+
+**Properties**
+
+-   `developerPayload` **[string][87]?** An optional payload can be assigned by game developer, which will be attached in the signed purchase request
+-   `paymentID` **[string][87]** ID of the payment
+-   `productID` **[string][87]** ID of the purchased product
+-   `purchaseTime` **[number][83]** A UNIX timestamp representing the time purchase is made
+-   `purchaseToken` **[number][83]** A token used for consuming the purchase
+-   `signedRequest` **[SignedPurchaseRequest][98]** A signed request of this purchase
+
 ## SignedPurchaseRequest
+
+On your game server, please validate this signature 
+by the following steps:
+
+1.  Split the signature into two parts delimited by the `.` character.
+2.  Decode the first part with base64url encoding.
+3.  Decode the second part with base64url encoding, which should be a
+    string representation of an JSON object with fields below:
+
+    -   algorithm - Always `HMAC-SHA256`
+
+-   is_consumed - Representing the consumption state of the purchase
+    -   issued_at - A UNIX timestamp representing the time signature
+        is issued
+    -   payment_id - ID of the payment
+    -   product_id - ID of the purchased product
+    -   purchase_time - A UNIX timestamp representing the time purchase is made
+    -   purchase_token - A token used for consuming the purchase
+
+4.  Hash the second part string using HMAC SHA-256 and your app
+    secret, check if it is identical to the first part string.
+5.  You may also wish to validate the timestamp to see if the request was
+    made recently.
 
 Type: [string][87]
 
@@ -1407,9 +1447,9 @@ Type: [string][87]
 
 [77]: #purchaseconfig
 
-[78]: #purchase
+[78]: #customupdatepayload
 
-[79]: #customupdatepayload
+[79]: #purchase
 
 [80]: #signedpurchaserequest
 
@@ -1446,3 +1486,5 @@ Type: [string][87]
 [96]: https://developers.facebook.com/docs/games/instant-games/bundle-config
 
 [97]: #localizablecontent
+
+[98]: #signedpurchaserequest

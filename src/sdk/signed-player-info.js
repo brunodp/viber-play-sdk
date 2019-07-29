@@ -38,12 +38,12 @@ export default class SignedPlayerInfo {
    * 3. Decode the second part with base64url encoding, which should be a
    *    string representation of an JSON object with fields below:
    *
-   *    - algorithm - always `HMAC-SHA256`
-   *    - issued_at - a unix timestamp representing the time signature
-   *      is issued.
-   *    - player_id - Auth ID of the player.
+   *    - algorithm - Always `HMAC-SHA256`
+   *    - issued_at - A UNIX timestamp representing the time signature
+   *      is issued
+   *    - player_id - ID of the player
    *    - request_payload - the requestPayload string you defined when
-   *      calling `ViberPlay.player.getSignedPlayerInfoAsync`.
+   *      calling `ViberPlay.player.getSignedPlayerInfoAsync`
    *
    * 4. Hash the second part string using HMAC SHA-256 and your app
    *    secret, check if it is identical to the first part string.
