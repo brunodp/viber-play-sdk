@@ -700,9 +700,6 @@ Returns **any** Purchase result
 (Experimental) Get a list of unconsumed purchases.
 This is useful for games to double check if there's unconsumed purchase
 should be processed.
-Please note the list will only consists of the purchases made
-on the same payment platform of the current device.
-e.g. App Store purchases will not be visible on Google Play device.
 
 **Examples**
 
